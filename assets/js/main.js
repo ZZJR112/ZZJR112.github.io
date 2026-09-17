@@ -192,6 +192,14 @@
     qs('#d-next-title').textContent = next.title;
   }
 
+  /* ---------------------------------------------------- dynamic counts */
+  function applyCounts() {
+    qsa('[data-count]').forEach(function (el) {
+      var key = el.getAttribute('data-count');
+      el.textContent = countOf(key);
+    });
+  }
+
   /* ---------------------------------------------------- boot */
   function applySite(site) {
     if (!site) return;
@@ -210,6 +218,7 @@
     initLightbox();
     initWorks();
     initDetail();
+    applyCounts();
     applySite(window.SITE_INFO);
     initReveal(document);
   }
