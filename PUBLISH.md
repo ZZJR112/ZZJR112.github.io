@@ -1,15 +1,14 @@
 # 发布到 GitHub Pages
 
-本地已经准备好了：仓库已初始化、代码已提交（`git log` 能看到一条 commit）。
-下面只需要把仓库推到 GitHub 并开启 Pages，全程不需要改任何代码。
+> ✅ **已完成** —— 站点已上线：<https://zzjr112.github.io/>
+> 仓库：`ZZJR112/ZZJR112.github.io`（Public，Pages 源 master 分支根目录）
+> 下面保留完整步骤，方便你以后重建或换仓库时照着做。
 
----
-
-## 你的在线地址会是
+## 你的在线地址
 
 | 仓库名 | 访问地址 |
 |---|---|
-| `ZZJR112.github.io`（推荐） | `https://zzjr112.github.io/` |
+| `ZZJR112.github.io`（当前使用的） | `https://zzjr112.github.io/` ✅ |
 | `portfolio` 等其它名字 | `https://zzjr112.github.io/portfolio/` |
 
 > 仓库名必须叫 `用户名.github.io` 才能用根域名；一个账号只能有一个这样的仓库。

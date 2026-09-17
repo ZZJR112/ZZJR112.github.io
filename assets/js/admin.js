@@ -607,11 +607,19 @@
       window.addEventListener('hashchange', route);
       route();
     }).catch(function (e) {
-      app.innerHTML = '<div class="notice is-on err" style="margin-top:60px">' +
-        '连不上本地服务（' + esc(e.message) + '）。<br><br>' +
-        '在 portfolio 目录下运行：<br><br>' +
-        '<code style="font-family:var(--font-mono);color:var(--text)">node server.js</code><br><br>' +
-        '然后刷新本页。</div>';
+      var onLocal = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+      app.innerHTML = onLocal
+        ? '<div class="notice is-on err" style="margin-top:60px">' +
+            '连不上本地服务（' + esc(e.message) + '）。<br><br>' +
+            '在 portfolio 目录下运行：<br><br>' +
+            '<code style="font-family:var(--font-mono);color:var(--text)">node server.js</code><br><br>' +
+            '然后刷新本页。</div>'
+        : '<div style="margin-top:80px;max-width:520px">' +
+            '<h1 style="font-family:var(--font-cn-serif);font-size:30px;font-weight:300;letter-spacing:1px;margin:0 0 20px">' +
+            '这里是内容管理后台</h1>' +
+            '<p style="font-size:15px;font-weight:300;line-height:30px;color:var(--text-2);margin:0 0 28px">' +
+            '它只在你自己的电脑上运行，用来增删改作品。线上版本是静态站点，不需要也不包含后台。</p>' +
+            '<a class="btn btn--ghost" href="index.html">回到作品集</a></div>';
     });
   });
 })();

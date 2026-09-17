@@ -2,7 +2,8 @@
 
 剪辑作品集网站 —— 信息流、混剪、vlog、口播。
 
-- 在线地址：发布后见仓库 Settings → Pages
+- **在线地址：<https://zzjr112.github.io/>**
+- 仓库：<https://github.com/ZZJR112/ZZJR112.github.io>（GitHub Pages，master 分支）
 - 纯静态站点，零构建、零依赖，双击 `index.html` 也能看
 
 ## 页面
