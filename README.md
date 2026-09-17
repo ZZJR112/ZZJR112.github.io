@@ -13,7 +13,7 @@
 | `works.html` | 作品页：全部分类筛选与完整作品列表 |
 | `work.html` | 作品详情：`?id=` 动态读取，含创作说明与下一支 |
 | `resume.html` | 简历 |
-| `about.html` | 关于 |
+| `contact.html` | 联系我 |
 | `admin.html` | 后台管理（需本地服务，见下） |
 
 ## 本地运行
@@ -48,7 +48,7 @@ node server.js
 
 ```
 portfolio/
-├── index.html  works.html  work.html  resume.html  about.html
+├── index.html  works.html  work.html  resume.html  contact.html
 ├── admin.html                 # 后台（SPA）
 ├── data.json                  # 作品数据（后台读写）
 ├── server.js                  # 零依赖 Node 服务

@@ -24,6 +24,25 @@
   function qsa(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
   function uid() { return 'w-' + Date.now().toString(36); }
 
+  /* count-up for numeric stat values */
+  function animateCounts(scope) {
+    if (!scope || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
+    qsa('.val', scope).forEach(function (el) {
+      var target = parseInt(String(el.textContent || '').replace(/[^\d]/g, ''), 10);
+      if (isNaN(target) || target <= 0) return;
+      var dur = 700, start = null;
+      function step(ts) {
+        if (start === null) start = ts;
+        var p = Math.min(1, (ts - start) / dur);
+        var e = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(target * e);
+        if (p < 1) requestAnimationFrame(step);
+        else el.textContent = target;
+      }
+      requestAnimationFrame(step);
+    });
+  }
+
   function toast(msg, ok) {
     var t = qs('#toast');
     t.textContent = msg;
@@ -336,7 +355,6 @@
         '<div class="field-grid">' +
           field('邮箱 / EMAIL', '<input class="input" id="s-email" value="' + esc(s.email || '') + '">') +
           field('微信 / WECHAT', '<input class="input" id="s-wechat" value="' + esc(s.wechat || '') + '">') +
-          field('小红书 / XHS', '<input class="input" id="s-xhs" value="' + esc(s.xhs || '') + '">') +
         '</div></div>' +
 
       '<div class="sec"><span class="lbl">03 — CATEGORIES</span>' +
@@ -369,7 +387,7 @@
     qs('#s-save').addEventListener('click', function () {
       state.site = {
         name: qs('#s-name').value, city: qs('#s-city').value, status: qs('#s-status').value,
-        email: qs('#s-email').value, wechat: qs('#s-wechat').value, xhs: qs('#s-xhs').value
+        email: qs('#s-email').value, wechat: qs('#s-wechat').value
       };
       saveAll().then(function () { toast('站点设置已保存'); })
         .catch(function (e) { toast('保存失败：' + e.message, true); });
@@ -461,6 +479,98 @@
     });
   }
 
+  /* ---------------------------------------------------- stats view */
+  function fmtTime(iso) {
+    try {
+      var d = new Date(iso);
+      var p = function (n) { return (n < 10 ? '0' : '') + n; };
+      return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+    } catch (e) { return iso || ''; }
+  }
+  function fmtDur(s) {
+    s = Math.round(Number(s) || 0);
+    var m = Math.floor(s / 60), sec = s % 60;
+    return (m > 0 ? m + ' 分 ' : '') + sec + ' 秒';
+  }
+  function stat(lbl, val, dim) {
+    return '<div class="stat' + (dim ? ' dim' : '') + '"><div class="lbl">' + lbl + '</div><div class="val">' + val + '</div></div>';
+  }
+  function workTitle(id) {
+    var w = state.works.filter(function (x) { return x.id === id; })[0];
+    return w ? w.title : (catName(id) || id);
+  }
+
+  function renderStats() {
+    api('GET', '/api/visits').then(function (data) {
+      var recs = (data && data.visits) || [];
+      var pages = recs.filter(function (r) { return r.type === 'page'; });
+      var watches = recs.filter(function (r) { return r.type === 'watch'; });
+      var visitors = {};
+      recs.forEach(function (r) { if (r.vid) visitors[r.vid] = 1; });
+      var lastTs = recs.length ? recs[recs.length - 1].ts : null;
+
+      var byWork = {};
+      watches.forEach(function (r) {
+        var id = r.workId || 'unknown';
+        byWork[id] = byWork[id] || { count: 0, secs: 0 };
+        byWork[id].count += 1;
+        byWork[id].secs += (Number(r.seconds) || 0);
+      });
+      var workRows = Object.keys(byWork).map(function (id) {
+        var agg = byWork[id];
+        return '<tr>' +
+          '<td><div class="t">' + esc(workTitle(id)) + '</div></td>' +
+          '<td style="width:120px"><div class="d">' + agg.count + '</div></td>' +
+          '<td style="width:160px"><div class="d">' + fmtDur(agg.secs) + '</div></td>' +
+          '<td style="width:160px"><div class="d">' + fmtDur(agg.secs / agg.count) + '</div></td>' +
+        '</tr>';
+      }).join('');
+
+      var recent = recs.slice().reverse().slice(0, 12).map(function (r) {
+        var label = r.type === 'page'
+          ? ('访问页面 · ' + (r.page || ''))
+          : ('观看视频 · ' + workTitle(r.workId));
+        return '<tr>' +
+          '<td style="width:200px"><div class="d">' + fmtTime(r.ts) + '</div></td>' +
+          '<td><div class="t">' + esc(label) + '</div></td>' +
+          '<td style="width:140px"><div class="d">' + (r.type === 'watch' ? fmtDur(r.seconds) : '—') + '</div></td>' +
+          '<td style="width:160px"><div class="d">' + esc((r.vid || '匿名访客').slice(0, 14)) + '</div></td>' +
+        '</tr>';
+      }).join('');
+
+      app.innerHTML =
+        '<div class="page-top">' +
+          '<div><h1>访问统计</h1><div class="sub">VISITS  /  ' + recs.length + ' RECORDS</div></div>' +
+          '<div class="btn-row"><button class="btn btn--ghost" id="st-refresh">刷新</button></div>' +
+        '</div>' +
+        '<div class="rule"></div>' +
+        '<div class="stats">' +
+          stat('总记录数', recs.length) +
+          stat('页面访问', pages.length) +
+          stat('视频观看', watches.length, true) +
+          stat('独立访客', Object.keys(visitors).length, true) +
+        '</div>' +
+        '<div class="notice is-on" style="margin-top:32px">最近访问：' + (lastTs ? fmtTime(lastTs) : '暂无数据') + '</div>' +
+        '<div class="rule" style="margin-top:48px"></div>' +
+        '<div class="head__label" style="margin-top:32px">各视频观看时长</div>' +
+        (workRows
+          ? '<table class="tbl"><thead><tr><th>视频</th><th style="width:120px">观看次数</th><th style="width:160px">总时长</th><th style="width:160px">平均时长</th></tr></thead><tbody>' + workRows + '</tbody></table>'
+          : '<div class="empty" style="padding:40px 0">还没有视频观看记录。</div>') +
+        '<div class="rule" style="margin-top:48px"></div>' +
+        '<div class="head__label" style="margin-top:32px">最近记录</div>' +
+        (recent
+          ? '<table class="tbl"><thead><tr><th style="width:200px">时间</th><th>行为</th><th style="width:140px">时长</th><th style="width:160px">访客</th></tr></thead><tbody>' + recent + '</tbody></table>'
+          : '<div class="empty" style="padding:40px 0">暂无记录。</div>');
+
+      animateCounts(qs('.stats'));
+
+      var rf = qs('#st-refresh');
+      if (rf) rf.addEventListener('click', renderStats);
+    }).catch(function (e) {
+      app.innerHTML = '<div class="notice is-on err">读取统计失败：' + esc(e.message) + '</div>';
+    });
+  }
+
   /* ---------------------------------------------------- router */
   var cfgCache = { owner: '', repo: '', hasToken: false };
 
@@ -473,6 +583,7 @@
     if (parts[0] === 'works') renderList();
     else if (parts[0] === 'edit') renderEdit(parts[1] || 'new');
     else if (parts[0] === 'settings') renderSettings();
+    else if (parts[0] === 'stats') renderStats();
     else renderList();
     window.scrollTo(0, 0);
   }

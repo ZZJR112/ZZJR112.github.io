@@ -23,6 +23,7 @@ const PORT = process.env.PORT || 8787;
 const DATA_FILE = path.join(ROOT, 'data.json');
 const CONFIG_FILE = path.join(ROOT, 'admin-config.json');
 const UPLOAD_DIR = path.join(ROOT, 'uploads');
+const VISITS_FILE = path.join(ROOT, 'visits.json');
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -201,6 +202,26 @@ const server = http.createServer(async function (req, res) {
       const stamped = Date.now() + '-' + name;
       fs.writeFileSync(path.join(UPLOAD_DIR, stamped), buf);
       return send(res, 200, { ok: true, url: 'uploads/' + encodeURIComponent(stamped) });
+    }
+
+    /* ---- api: visits / analytics ---- */
+    if (p === '/api/visits' && req.method === 'GET') {
+      const data = readJSON(VISITS_FILE, { visits: [] });
+      return send(res, 200, data);
+    }
+    if (p === '/api/visits' && req.method === 'POST') {
+      let rec;
+      try { rec = JSON.parse((await readBody(req)).toString('utf8') || '{}'); }
+      catch (e) { return send(res, 400, { ok: false, message: 'invalid body' }); }
+      if (!rec || !rec.type) return send(res, 400, { ok: false, message: 'type 必填' });
+      rec.ts = rec.ts || new Date().toISOString();
+      if (!rec.vid) rec.vid = 'v-anon';
+      const data = readJSON(VISITS_FILE, { visits: [] });
+      data.visits = data.visits || [];
+      data.visits.push(rec);
+      if (data.visits.length > 10000) data.visits = data.visits.slice(-10000);
+      writeJSON(VISITS_FILE, data);
+      return send(res, 200, { ok: true });
     }
 
     /* ---- static ---- */

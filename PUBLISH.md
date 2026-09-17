@@ -38,7 +38,7 @@
 2. Repository name 填 `ZZJR112.github.io`，选 **Public**，勾 **Add a README file**，点 Create repository
 3. 进仓库后点 `Add file → Upload files`
 4. 把 `D:\WB\WZ\portfolio` 里的这些**整个拖进去**：
-   - `index.html` `works.html` `work.html` `resume.html` `about.html`
+   - `index.html` `works.html` `work.html` `resume.html` `contact.html`
    - `assets/` 整个文件夹
    - `data.json`
    - `admin.html`（可选项，线上用不了后台，但留着无妨）

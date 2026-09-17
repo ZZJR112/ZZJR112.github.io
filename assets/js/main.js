@@ -57,6 +57,18 @@
   }
 
   /* ---------------------------------------------------- lightbox */
+  var pendingWatchFlush = null;
+  function attachWatch(work) {
+    var v = qs('video', qs('#lightbox'));
+    if (!v) return;
+    var seen = {};
+    v.addEventListener('timeupdate', function () { seen[Math.floor(v.currentTime)] = 1; });
+    pendingWatchFlush = function () {
+      var secs = Object.keys(seen).length;
+      if (secs > 0) track({ type: 'watch', workId: work.id, seconds: secs });
+    };
+  }
+
   function openLightbox(work) {
     var box = qs('#lightbox');
     if (!box) return;
@@ -64,6 +76,7 @@
     stage.innerHTML = work.video
       ? '<video src="' + esc(work.video) + '" controls autoplay playsinline></video>'
       : '<p class="lightbox__note">VIDEO NOT ATTACHED<br><br>在 assets/js/data.js 里给这支作品填 video 路径即可播放</p>';
+    if (work.video) attachWatch(work);
     box.classList.add('is-open');
     document.body.style.overflow = 'hidden';
   }
@@ -73,6 +86,7 @@
     if (!box) return;
     var v = qs('video', box);
     if (v) { v.pause(); }
+    if (pendingWatchFlush) { pendingWatchFlush(); pendingWatchFlush = null; }
     qs('.lightbox__stage', box).innerHTML = '';
     box.classList.remove('is-open');
     document.body.style.overflow = '';
@@ -92,7 +106,7 @@
   /* ---------------------------------------------------- home: filter + grid */
   function workCardHTML(w, i) {
     return '' +
-      '<a class="work reveal" href="work.html?id=' + esc(w.id) + '" data-cat="' + esc(w.cat) + '">' +
+      '<a class="work reveal" href="work.html?id=' + esc(w.id) + '" data-cat="' + esc(w.cat) + '" style="--d:' + (i * 0.06) + 's">' +
         '<div class="work__media">' +
           '<div class="work__cover" style="' + coverStyle(w) + '"></div>' +
           '<span class="work__chip">' + esc(catName(w.cat)) + '</span>' +
@@ -208,11 +222,87 @@
       if (!site[k]) return;
       if (k === 'email') { el.textContent = site[k]; el.setAttribute('href', 'mailto:' + site[k]); }
       else if (k === 'wechat') { el.textContent = '微信  ' + site[k]; }
-      else if (k === 'xhs') { el.textContent = '小红书  ' + site[k]; }
       else if (k === 'status') { el.textContent = site[k]; }
     });
   }
 
+  /* ---------------------------------------------------- analytics (cloud-ready) */
+  var ANALYTICS_API = window.ANALYTICS_API || null;
+  function resolveAnalytics() {
+    if (ANALYTICS_API !== null) return;
+    if (isLocal) ANALYTICS_API = '';
+    else if (location.hostname.indexOf('github.io') > -1 || location.protocol === 'file:') ANALYTICS_API = null;
+    else ANALYTICS_API = '';
+  }
+  var VISITOR_ID = (function () {
+    try {
+      var v = localStorage.getItem('zjr_vid');
+      if (!v) { v = 'v-' + Math.random().toString(36).slice(2, 10); localStorage.setItem('zjr_vid', v); }
+      return v;
+    } catch (e) { return 'v-anon'; }
+  })();
+  function track(payload) {
+    resolveAnalytics();
+    if (ANALYTICS_API === null) return;
+    try {
+      payload.vid = VISITOR_ID;
+      payload.ts = payload.ts || new Date().toISOString();
+      fetch(ANALYTICS_API + '/api/visits', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).catch(function () {});
+    } catch (e) {}
+  }
+
+  function initTracking() {
+    var page = (location.pathname.split('/').pop() || 'index.html').replace('.html', '');
+    setTimeout(function () { track({ type: 'page', page: page }); }, 800);
+  }
+
+  /* ---------------------------------------------------- motion */
+  function initMotion() {
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var touch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+
+    var hero = qs('.hero');
+    if (hero) {
+      hero.classList.add('hero-intro');
+      requestAnimationFrame(function () { requestAnimationFrame(function () { document.body.classList.add('is-ready'); }); });
+    }
+
+    var bar = document.createElement('div');
+    bar.className = 'progress';
+    document.body.appendChild(bar);
+    var onScroll = function () {
+      var h = document.documentElement;
+      var max = h.scrollHeight - h.clientHeight;
+      var p = max > 0 ? (h.scrollTop || document.body.scrollTop) / max : 0;
+      bar.style.width = (p * 100).toFixed(2) + '%';
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    if (!reduce && !touch) {
+      var glow = document.createElement('div');
+      glow.className = 'cursor-glow';
+      document.body.appendChild(glow);
+      var gx = 0, gy = 0, cx = 0, cy = 0, raf = null;
+      var loop = function () {
+        cx += (gx - cx) * 0.15; cy += (gy - cy) * 0.15;
+        glow.style.transform = 'translate(' + cx + 'px,' + cy + 'px) translate(-50%,-50%)';
+        if (Math.abs(gx - cx) > 0.5 || Math.abs(gy - cy) > 0.5) raf = requestAnimationFrame(loop);
+        else raf = null;
+      };
+      window.addEventListener('mousemove', function (e) {
+        gx = e.clientX; gy = e.clientY; glow.style.opacity = '1';
+        if (!raf) raf = requestAnimationFrame(loop);
+      }, { passive: true });
+      window.addEventListener('mouseleave', function () { glow.style.opacity = '0'; });
+    }
+  }
+
+  /* ---------------------------------------------------- boot */
   function boot() {
     initNav();
     initLightbox();
@@ -221,6 +311,8 @@
     applyCounts();
     applySite(window.SITE_INFO);
     initReveal(document);
+    initMotion();
+    initTracking();
   }
 
   var isLocal = /^(localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)$/.test(location.hostname);
