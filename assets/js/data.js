@@ -1,0 +1,180 @@
+/* ============================================================
+   Works data
+   ------------------------------------------------------------
+   替换成你自己的作品：
+   - id      : 唯一，详情页靠 ?id= 读取
+   - cat     : feed | mashup | vlog | talk
+   - cover   : 留空则用下方 gradient 占位；填图片路径/URL 即换真实截帧
+   - video   : 留空则点击播放时提示"视频待上传"；填 mp4 路径/URL 即可播放
+   - stills  : 详情页下方的静帧，同样留空走渐变
+   ============================================================ */
+
+window.CATEGORIES = [
+  { key: 'all',    name: '全部' },
+  { key: 'feed',   name: '信息流' },
+  { key: 'mashup', name: '混剪' },
+  { key: 'vlog',   name: 'vlog' },
+  { key: 'talk',   name: '口播' }
+];
+
+window.WORKS = [
+  {
+    id: 'feed-01',
+    cat: 'feed',
+    title: '夏日上新 · 信息流短片',
+    tools: 'Premiere  /  剪映  /  卡点',
+    duration: '00:15',
+    ratio: '9:16',
+    year: '2026',
+    desc: '一支 15 秒的产品信息流。素材只有 40 多条手机实拍，我做的第一件事是把最有卖点的一帧提到开头三秒。全程踩点剪辑，字幕每屏不超过 12 个字，让小屏也能一眼看完。',
+    gradient: 'linear-gradient(135deg, #1A2B30 0%, #101318 55%, #0C0D10 100%)',
+    cover: '', video: '',
+    stills: ['00:04', '00:11']
+  },
+  {
+    id: 'feed-02',
+    cat: 'feed',
+    title: '新店开业 · 信息流',
+    tools: '剪映  /  卡点  /  字幕',
+    duration: '00:22',
+    ratio: '9:16',
+    year: '2026',
+    desc: '开业引流用的竖屏信息流。前 3 秒用门头实拍加热闹人声切入，中段快速切四组产品特写，结尾留 2 秒静态店招与地址。',
+    gradient: 'linear-gradient(135deg, #2A2030 0%, #151119 55%, #0B0A0E 100%)',
+    cover: '', video: '',
+    stills: ['00:06', '00:17']
+  },
+  {
+    id: 'feed-03',
+    cat: 'feed',
+    title: '单品卖点 · 信息流',
+    tools: 'Premiere  /  剪映',
+    duration: '00:18',
+    ratio: '9:16',
+    year: '2025',
+    desc: '把一个卖点讲清楚的竖屏短片。全片只围绕一个使用场景展开，靠三次重复强化记忆点。',
+    gradient: 'linear-gradient(135deg, #1B2A22 0%, #11170F 55%, #0A0C09 100%)',
+    cover: '', video: '',
+    stills: ['00:03', '00:12']
+  },
+  {
+    id: 'feed-04',
+    cat: 'feed',
+    title: '活动预告 · 信息流',
+    tools: 'Premiere  /  After Effects',
+    duration: '00:20',
+    ratio: '16:9',
+    year: '2025',
+    desc: '横版活动预告。用 AE 做了一组时间轴式的文字动效，把日期、地点、亮点分三段推进。',
+    gradient: 'linear-gradient(135deg, #2B2416 0%, #181410 55%, #0C0A08 100%)',
+    cover: '', video: '',
+    stills: ['00:05', '00:14']
+  },
+
+  {
+    id: 'mashup-01',
+    cat: 'mashup',
+    title: '年度高光 · 混剪',
+    tools: 'Premiere  /  After Effects  /  踩点',
+    duration: '01:30',
+    ratio: '16:9',
+    year: '2026',
+    desc: '一年素材的混剪。先按情绪分了四个段落，再逐段踩点，鼓点落位的画面全部换成短切，让整支片子有一个持续往上推的力。',
+    gradient: 'linear-gradient(135deg, #242038 0%, #14121F 55%, #0A0910 100%)',
+    cover: '', video: '',
+    stills: ['00:24', '01:06']
+  },
+  {
+    id: 'mashup-02',
+    cat: 'mashup',
+    title: '旅行碎片 · 混剪',
+    tools: 'Premiere  /  调色',
+    duration: '01:05',
+    ratio: '16:9',
+    year: '2025',
+    desc: '七天旅行的素材只有手机和一段航拍。统一调色后按地点分章，每章用一个空镜收尾。',
+    gradient: 'linear-gradient(135deg, #16262F 0%, #0F161C 55%, #080C0F 100%)',
+    cover: '', video: '',
+    stills: ['00:18', '00:47']
+  },
+  {
+    id: 'mashup-03',
+    cat: 'mashup',
+    title: '城市节奏 · 混剪',
+    tools: 'Premiere  /  踩点',
+    duration: '00:48',
+    ratio: '16:9',
+    year: '2025',
+    desc: '纯踩点练习。把同一座城市的车流、行人、霓虹切成 0.5 秒的碎片，跟着节拍堆到最密再突然放开。',
+    gradient: 'linear-gradient(135deg, #2E1F1F 0%, #1A1214 55%, #0B0809 100%)',
+    cover: '', video: '',
+    stills: ['00:12', '00:33']
+  },
+
+  {
+    id: 'vlog-01',
+    cat: 'vlog',
+    title: '太原周末 · Vlog',
+    tools: 'Premiere  /  调色  /  字幕',
+    duration: '03:20',
+    ratio: '16:9',
+    year: '2026',
+    desc: '一支完整的周末记录。叙事上留了空白：不每段都配旁白，让环境声顶上去。字幕只保留关键信息，不抢画面。',
+    gradient: 'linear-gradient(135deg, #33291C 0%, #1B1712 55%, #0C0A08 100%)',
+    cover: '', video: '',
+    stills: ['00:52', '02:14']
+  },
+  {
+    id: 'vlog-02',
+    cat: 'vlog',
+    title: '备考一天 · Vlog',
+    tools: 'Premiere  /  剪映  /  字幕',
+    duration: '04:12',
+    ratio: '16:9',
+    year: '2025',
+    desc: '长时间的日常记录最难的是取舍。我把 6 小时素材压到 4 分钟，只留下三次状态变化，其余全删。',
+    gradient: 'linear-gradient(135deg, #1F2A34 0%, #12181E 55%, #090B0E 100%)',
+    cover: '', video: '',
+    stills: ['01:10', '03:02']
+  },
+  {
+    id: 'vlog-03',
+    cat: 'vlog',
+    title: '搬家记 · Vlog',
+    tools: 'Premiere  /  调色',
+    duration: '02:45',
+    ratio: '16:9',
+    year: '2025',
+    desc: '从空房到入住。用同一个机位拍了前后两次对比，中间插入整理过程，结构最简单但情绪最完整。',
+    gradient: 'linear-gradient(135deg, #2A2436 0%, #161320 55%, #0A0910 100%)',
+    cover: '', video: '',
+    stills: ['00:38', '01:56']
+  },
+
+  {
+    id: 'talk-01',
+    cat: 'talk',
+    title: '三分钟知识分享 · 口播',
+    tools: 'Premiere  /  字幕包装',
+    duration: '03:05',
+    ratio: '9:16',
+    year: '2026',
+    desc: '竖屏口播。第一件事是删掉所有口头禅和停顿，把 4 分 20 秒压到 3 分钟。关键词做成大字卡贴在画面下三分之一，保证静音也能看懂。',
+    gradient: 'linear-gradient(135deg, #1C2430 0%, #10141C 55%, #080A0E 100%)',
+    cover: '', video: '',
+    stills: ['00:41', '02:18']
+  },
+  {
+    id: 'talk-02',
+    cat: 'talk',
+    title: '干货拆解 · 口播',
+    tools: 'Premiere  /  剪映  /  字幕',
+    duration: '02:40',
+    ratio: '9:16',
+    year: '2025',
+    desc: '把一个复杂概念拆成三步讲。每步之间用一次短暂的黑场做分隔，给观众一个喘息点。',
+    gradient: 'linear-gradient(135deg, #301A22 0%, #1A1016 55%, #0B0709 100%)',
+    cover: '', video: '',
+    stills: ['00:29', '01:47']
+  }
+];

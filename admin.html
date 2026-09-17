@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>后台管理 — ZHANG JUN RUI</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body class="admin">
+
+<div class="admin-shell">
+
+  <!-- ==================== sidebar -->
+  <aside class="side">
+    <div class="side__brand">
+      <span class="name">张君睿的作品集</span>
+      <span class="sub">ADMIN</span>
+    </div>
+    <nav class="side__nav">
+      <a class="side__link" href="#/works" data-route="works">作品<span class="en">Works</span></a>
+      <a class="side__link" href="#/edit" data-route="edit">编辑<span class="en">Edit</span></a>
+      <a class="side__link" href="#/settings" data-route="settings">设置<span class="en">Settings</span></a>
+    </nav>
+    <div class="side__foot">
+      <a href="index.html" target="_blank">打开前台 ↗</a>
+    </div>
+  </aside>
+
+  <!-- ==================== main -->
+  <main class="main" id="app"></main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/js/admin.js"></script>
+</body>
+</html>
