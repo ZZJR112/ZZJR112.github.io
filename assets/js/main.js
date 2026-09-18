@@ -227,11 +227,14 @@
   }
 
   /* ---------------------------------------------------- analytics (cloud-ready) */
+  // 线上 Node 后台地址（Render）。github.io 静态站跨域上报访问到此；后端已带 CORS `*`。
+  var BACKEND_API = 'https://zzjr112-github-io.onrender.com';
   var ANALYTICS_API = window.ANALYTICS_API || null;
   function resolveAnalytics() {
     if (ANALYTICS_API !== null) return;
     if (isLocal) ANALYTICS_API = '';
-    else if (location.hostname.indexOf('github.io') > -1 || location.protocol === 'file:') ANALYTICS_API = null;
+    else if (location.protocol === 'file:') ANALYTICS_API = null; // 本地双击打开不采集
+    else if (location.hostname.indexOf('github.io') > -1) ANALYTICS_API = BACKEND_API; // 跨域上报到线上后台
     else ANALYTICS_API = '';
   }
   var VISITOR_ID = (function () {
