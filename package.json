@@ -1,0 +1,13 @@
+{
+  "name": "zhangjunrui-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "张君睿个人作品集 — 零依赖 Node 后台 + 静态前台",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

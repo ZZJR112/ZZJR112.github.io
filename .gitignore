@@ -13,3 +13,6 @@ Thumbs.db
 
 # 数据临时文件
 data.json.tmp
+
+# 本地访问统计运行时数据，不入库
+visits.json
