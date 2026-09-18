@@ -132,7 +132,18 @@ const server = http.createServer(async function (req, res) {
   const url = new URL(req.url, 'http://localhost');
   const p = url.pathname;
 
-  if (req.method === 'OPTIONS') return send(res, 204, '');
+  // CORS preflight — must explicitly allow the methods/headers the browser
+  // will send. A bare ACAO:* is NOT enough when the real request uses
+  // Content-Type: application/json (non-simple), or the browser blocks it.
+  if (req.method === 'OPTIONS') {
+    res.writeHead(204, {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '86400'
+    });
+    return res.end();
+  }
 
   try {
     /* ---- api: works ---- */
